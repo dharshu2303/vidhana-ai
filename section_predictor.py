@@ -537,18 +537,18 @@ def generate_fir_draft(
 FIRST INFORMATION REPORT
 (Under Section 154 Cr.P.C.)
 
-═══════════════════════════════════════════════════════════════════
+-------------------------------------------------------------------
 
 1. District: ..................    P.S.: {police_station}
    Year: {datetime.now().year}            FIR No.: {fir_no}
    Date of Filing: {filing_date}    Time: {filing_time}
 
-═══════════════════════════════════════════════════════════════════
+-------------------------------------------------------------------
 
 2. ACT(S) AND SECTION(S):
    {sections_str}
 
-═══════════════════════════════════════════════════════════════════
+-------------------------------------------------------------------
 
 3. OCCURRENCE OF OFFENCE:
    (a) Day & Date: {date_of_occurrence}
@@ -560,7 +560,7 @@ FIRST INFORMATION REPORT
    (a) Direction and Distance from P.S.: ..................
    (b) Address: {place_of_occurrence}
 
-═══════════════════════════════════════════════════════════════════
+-------------------------------------------------------------------
 
 6. COMPLAINANT / INFORMANT:
    (a) Name: {complainant_name}
@@ -570,45 +570,45 @@ FIRST INFORMATION REPORT
    (e) Occupation: ..................
    (f) Address: ..................
 
-═══════════════════════════════════════════════════════════════════
+-------------------------------------------------------------------
 
 7. DETAILS OF KNOWN / SUSPECTED / UNKNOWN ACCUSED:
    As per investigation.
 
-═══════════════════════════════════════════════════════════════════
+-------------------------------------------------------------------
 
 8. REASONS FOR DELAY IN REPORTING BY COMPLAINANT / INFORMANT:
    N/A
 
-═══════════════════════════════════════════════════════════════════
+-------------------------------------------------------------------
 
 9. PARTICULARS OF PROPERTIES STOLEN / INVOLVED:
    As per complainant's statement.
 
-═══════════════════════════════════════════════════════════════════
+-------------------------------------------------------------------
 
 10. TOTAL VALUE OF PROPERTY STOLEN:
     As per investigation.
 
-═══════════════════════════════════════════════════════════════════
+-------------------------------------------------------------------
 
 11. INQUEST REPORT / U.D. CASE NO., IF ANY:
     N/A
 
-═══════════════════════════════════════════════════════════════════
+-------------------------------------------------------------------
 
 12. DESCRIPTION OF INCIDENT:
 
 {description.strip()}
 
-═══════════════════════════════════════════════════════════════════
+-------------------------------------------------------------------
 
 13. ACTION TAKEN:
     Since the above information reveals commission of offence(s)
     u/s {sections_str}, registered the case and
     took up the investigation.
 
-═══════════════════════════════════════════════════════════════════
+-------------------------------------------------------------------
 
 14. SIGNATURE / THUMB IMPRESSION OF
     THE COMPLAINANT / INFORMANT:       ____________________
@@ -616,7 +616,7 @@ FIRST INFORMATION REPORT
 15. DATE & TIME OF DISPATCH TO
     THE COURT:                         ____________________
 
-═══════════════════════════════════════════════════════════════════
+-------------------------------------------------------------------
 
    Signature of Officer-in-Charge,
    Police Station: {police_station}
@@ -625,12 +625,12 @@ FIRST INFORMATION REPORT
    No.: ...............................
    Date: {filing_date}
 
-═══════════════════════════════════════════════════════════════════
+-------------------------------------------------------------------
 NOTE: This is a system-generated draft.
 Please verify all details and applicable sections with a legal
 expert before filing. This document is for reference only and
 does not constitute a legally filed FIR.
-═══════════════════════════════════════════════════════════════════"""
+-------------------------------------------------------------------"""
 
     return draft
 

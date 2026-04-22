@@ -1,0 +1,20 @@
+{
+  "rule_based_sections": [
+    "ipc_379"
+  ],
+  "ml_sections": [],
+  "ml_confidence": {},
+  "predicted_sections": [
+    "ipc_379"
+  ],
+  "alerts": {},
+  "extracted_details": {
+    "complainant_name": "अजय",
+    "date_of_occurrence": "",
+    "time_of_occurrence": "रात",
+    "place_of_occurrence": "के पास चोरी",
+    "police_station": ""
+  },
+  "detected_language": "en",
+  "translated_text": "मेरा नाम अजय है और कल रात मेरी साइकिल अन्ना नगर रेलवे स्टेशन के पास चोरी हो गई।"
+}

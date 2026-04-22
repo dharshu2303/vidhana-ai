@@ -3,8 +3,7 @@ import 'dart:html' as html;
 import 'dart:typed_data';
 
 /// Downloads a PDF file directly in the browser using dart:html.
-/// This works reliably on Flutter Web / Chrome.
-void downloadPdfWeb(Uint8List bytes, String filename) {
+void savePdf(Uint8List bytes, String filename) {
   final blob = html.Blob([bytes], 'application/pdf');
   final url = html.Url.createObjectUrlFromBlob(blob);
   // ignore: unused_local_variable

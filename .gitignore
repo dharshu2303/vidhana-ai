@@ -1,19 +1,32 @@
 # Python
-.venv/
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
+.venv/
+venv/
 *.pkl
-
-# Data
 *.csv
 
-# App build files
-fir_app/build/
-fir_app/.dart_tool/
-fir_app/.idea/
-fir_app/.gradle/
+# Flutter
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+build/
+*.so
+*.ipa
+*.apk
+*.debug
+*.symbols
 
-# Output folders
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Project specific
 output_text/
-"images/" 
-"images/" 
+images/
+*.json
+!test_api_hindi_out.json

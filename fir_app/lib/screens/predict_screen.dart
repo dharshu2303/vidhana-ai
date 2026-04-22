@@ -446,12 +446,20 @@ class _PredictScreenState extends State<PredictScreen> {
                                   return;
                                 }
                               }
+                              final extracted = (_result?['extracted_details'] as Map?)?.cast<String, dynamic>();
+                              final translatedText = _result?['translated_text'] as String?;
+                              final originalDesc = _controller.text.trim();
+                              final descToPass = (translatedText != null && translatedText.isNotEmpty && translatedText != originalDesc) 
+                                  ? translatedText : originalDesc;
+
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                   builder: (_) => FirFormScreen(
-                                    description: _controller.text.trim(),
+                                    description: descToPass,
+                                    originalDescription: originalDesc,
                                     sections: sections,
+                                    extractedDetails: extracted,
                                   ),
                                 ),
                               );
