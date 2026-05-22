@@ -37,15 +37,11 @@ class SttService {
     await _speech.listen(
       onResult: (result) {
         onResult(result.recognizedWords, result.finalResult);
-        if (result.finalResult) {
-          _isListening = false;
-          onDone();
-        }
       },
       localeId: localeId,
-      listenFor: const Duration(seconds: 30),
-      pauseFor: const Duration(seconds: 3),
       listenMode: stt.ListenMode.dictation,
+      listenFor: const Duration(hours: 1),
+      pauseFor: const Duration(hours: 1),
     );
   }
 

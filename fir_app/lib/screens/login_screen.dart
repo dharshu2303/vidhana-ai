@@ -14,8 +14,8 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final _emailCtrl = TextEditingController(text: 'priya');
-  final _passCtrl = TextEditingController(text: 'priya006');
+  final _emailCtrl = TextEditingController();
+  final _passCtrl = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   bool _obscure = true;
   String? _error;
@@ -257,16 +257,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
 
                   const SizedBox(height: 24),
-                  FadeInUp(
-                    delay: const Duration(milliseconds: 800),
-                    child: Text(
-                      'demo@vidhana.ai / demo123',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: AppColors.textMuted,
-                            fontSize: 12,
-                          ),
-                    ),
-                  ),
                 ],
               ),
             ),

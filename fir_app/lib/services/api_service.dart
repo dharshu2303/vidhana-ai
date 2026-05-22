@@ -3,9 +3,9 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 
 class ApiService {
-  // Change this to your machine's local IP for Android device testing
-  // e.g., 'http://192.168.1.100:8000'
-  static const String baseUrl = 'http://localhost:8000';
+  // Use the exact IP of your machine so the physical device connects properly over WiFi.
+  // Note: if you restart your router, your laptop IP might change.
+  static const String baseUrl = 'http://10.84.213.130:8000';
 
   static Future<Map<String, dynamic>> predict(String text,
       {int topK = 3}) async {

@@ -33,6 +33,21 @@ except ImportError:
     print("[WARN] Install with: pip install deep-translator langdetect")
 
 
+def _contains_non_latin_script(text: str) -> bool:
+    """Return True when text contains clear non-Latin script characters.
+
+    This helps when automatic language detection mistakenly returns English
+    for short/ noisy multilingual inputs.
+    """
+    # Covers common Indian scripts and a broad non-ASCII fallback.
+    script_pattern = re.compile(
+        r"[\u0900-\u097F\u0980-\u09FF\u0A00-\u0A7F\u0A80-\u0AFF"
+        r"\u0B00-\u0B7F\u0B80-\u0BFF\u0C00-\u0C7F\u0C80-\u0CFF"
+        r"\u0D00-\u0D7F\u0D80-\u0DFF\u0E00-\u0E7F\u0600-\u06FF]"
+    )
+    return bool(script_pattern.search(text))
+
+
 def _detect_language(text: str) -> str:
     """Detect the language of the given text."""
     if not _deep_translator_available:
@@ -52,14 +67,19 @@ def _detect_and_translate(text: str) -> tuple[str, str, str]:
         return text, "en", text
 
     try:
-        lang = _detect_language(text)
-
-        # If already English, return as-is
-        if lang == "en":
+        cleaned = (text or "").strip()
+        if not cleaned:
             return text, "en", text
 
-        # Translate to English
-        translated = GoogleTranslator(source=lang, target="en").translate(text)
+        lang = _detect_language(cleaned)
+        force_translation = _contains_non_latin_script(cleaned)
+
+        # If already English and script also looks English, return as-is.
+        # Otherwise, still attempt translation using auto source.
+        if lang == "en" and not force_translation:
+            return text, "en", text
+
+        translated = GoogleTranslator(source="auto", target="en").translate(cleaned)
         return translated or text, lang, text
     except Exception as e:
         print(f"[WARN] Translation error: {e}")
@@ -74,13 +94,17 @@ def _translate_to(text: str, target_lang: str) -> tuple[str, str, str]:
         return text, "en", text
 
     try:
-        lang = _detect_language(text)
+        cleaned = (text or "").strip()
+        if not cleaned:
+            return text, "en", text
+
+        lang = _detect_language(cleaned)
 
         # If already in target language, return as-is
         if lang == target_lang:
             return text, lang, text
 
-        translated = GoogleTranslator(source=lang, target=target_lang).translate(text)
+        translated = GoogleTranslator(source="auto", target=target_lang).translate(cleaned)
         return translated or text, lang, text
     except Exception as e:
         print(f"[WARN] Translation error: {e}")
@@ -113,40 +137,33 @@ class TranslateRequest(BaseModel):
 def predict(req: PredictRequest):
     original_text = req.text
 
-    # Step 1: Translate non-English text to English for prediction
+    # Step 1: Translate non-English text to English for analysis.
     translated_text, detected_lang, _ = _detect_and_translate(req.text)
 
-    # Step 2: Run prediction on both original and translated text
-    # Use translated for ML model, original for rule-based (has multi-language keywords)
-    result = predictor.predict(req.text, req.top_k)
+    # Step 2: Run prediction on the translated English text first so
+    # extraction/alerts are based on the normalized statement.
+    translated_result = predictor.predict(translated_text, req.top_k)
 
-    # Also run ML on translated text and merge
-    if detected_lang != "en" and translated_text != req.text:
-        translated_result = predictor.predict(translated_text, req.top_k)
-        # Merge sections: keep original results, add translated ones
+    # Step 3: Also run prediction on the original text to preserve
+    # language-specific keyword matches, then merge the results.
+    if translated_text != req.text:
+        original_result = predictor.predict(req.text, req.top_k)
+
         all_sections = list(dict.fromkeys(
-            result["predicted_sections"] + translated_result["predicted_sections"]
+            translated_result["predicted_sections"] + original_result["predicted_sections"]
         ))
-        result["predicted_sections"] = all_sections
+        translated_result["predicted_sections"] = all_sections
 
-        # Merge ML confidence
-        for k, v in translated_result["ml_confidence"].items():
-            if k not in result["ml_confidence"]:
-                result["ml_confidence"][k] = v
+        for key, value in original_result["ml_confidence"].items():
+            if key not in translated_result["ml_confidence"]:
+                translated_result["ml_confidence"][key] = value
 
-        # Replace UI alerts with translated_result alerts using English text which guarantees robust missing-field grammar detection
-        result["alerts"] = translated_result.get("alerts", {})
+        # Keep the English-based alerts and extracted details so the UI
+        # auto-fills from the translated statement.
+        translated_result["alerts"] = translated_result.get("alerts", {})
+        translated_result["extracted_details"] = translated_result.get("extracted_details", {})
 
-        # Extract details from both original and translated
-        translated_details = extract_details_from_text(translated_text)
-        original_details = result.get("extracted_details", {})
-
-        # Always prefer translated details (English logic is robust and captures full phrases),
-        # but fallback to original if translation failed to extract specifically.
-        for key in translated_details:
-            if translated_details[key]:
-                original_details[key] = translated_details[key]
-        result["extracted_details"] = original_details
+    result = translated_result
 
     result["detected_language"] = detected_lang
     result["translated_text"] = translated_text
@@ -155,9 +172,12 @@ def predict(req: PredictRequest):
 
 @app.post("/generate_fir")
 def generate_fir(req: FIRRequest):
+    translated_description, detected_lang, _ = _detect_and_translate(req.description)
+    description_for_draft = translated_description if detected_lang != "en" else req.description
+
     draft = generate_fir_draft(
         complainant_name=req.complainant_name,
-        description=req.description,
+        description=description_for_draft,
         sections=req.sections,
         date_of_occurrence=req.date_of_occurrence,
         time_of_occurrence=req.time_of_occurrence,
